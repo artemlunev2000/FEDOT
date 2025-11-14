@@ -20,6 +20,13 @@ jobs:
     steps:
       - name: Check disk space
         run: df -h
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+      - name: Check disk space 2
+        run: df -h
       - name: Checkout branch
         uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
