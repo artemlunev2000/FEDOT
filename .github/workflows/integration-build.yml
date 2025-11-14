@@ -4,9 +4,9 @@ on:
   schedule:
     - cron: '0 12 * * *'
   push:
-    branches: [ release ]
+    branches: [ test-workflow ]
   pull_request:
-    branches: [ release ]
+    branches: [ test-workflow ]
   workflow_dispatch:
 
 jobs:
@@ -18,6 +18,8 @@ jobs:
         python-version: [ 3.9, '3.10' ]
 
     steps:
+      - name: Check disk space
+        run: df -h
       - name: Checkout branch
         uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -35,13 +37,3 @@ jobs:
       - name: Test with pytest
         run: |
           pytest --cov=fedot -s test/integration
-      - name: Notify telegram bot
-        uses: appleboy/telegram-action@master
-        if: ${{ failure() && github.event_name == 'schedule' }}
-        with:
-          to: ${{ secrets.CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: "${{ github.event.repository.name }}: scheduled integration tests 
-          [were failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
-          format: markdown
-          disable_web_page_preview: true
